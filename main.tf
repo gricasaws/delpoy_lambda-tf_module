@@ -4,13 +4,14 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+  # profile = "test-profile"
 }
 
 provider "archive" {}
 
 data "archive_file" "zip" {
   type        = "zip"
-  source_dir = "lambda/"
+  source_dir  = "lambda/"
   output_path = "hello_lambda.zip"
 }
 
@@ -39,12 +40,12 @@ data "aws_iam_policy_document" "s3_policy" {
   }
 }
 resource "aws_iam_role_policy_attachment" "s3_lambda_attachment" {
-  role       = "${aws_iam_role.iam_for_lambda.name}"
-  policy_arn = "${aws_iam_policy.s3_lambda_policy.arn}"
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.s3_lambda_policy.arn
 }
 resource "aws_iam_policy" "s3_lambda_policy" {
   name   = "s3-lambda-lambda"
-  policy = "${data.aws_iam_policy_document.s3_policy.json}"
+  policy = data.aws_iam_policy_document.s3_policy.json
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
